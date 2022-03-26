@@ -444,8 +444,15 @@ function xhprof_get_content_by_run($xhprof_runs_impl, $run_id, $type,
     return "";
   }
 
-  $script = xhprof_generate_dot_script($raw_data, $threshold, $source,
-                                       $description, $func, $critical_path);
+  $script = $xhprof_runs_impl->get_dot_script($run_id, $source, $desc);
+  if (!$script) {
+    $script = xhprof_generate_dot_script($raw_data, $threshold, $source,
+    $description, $func, $critical_path);
+    $xhprof_runs_impl->save_dot_script($script, $type, $run_id);
+
+  }
+
+  return $script;
 
   $content = xhprof_generate_image_by_dot($script, $type);
   return $content;
@@ -481,6 +488,6 @@ function xhprof_render_image($xhprof_runs_impl, $run_id, $type, $threshold,
     exit();
   }
 
-  xhprof_generate_mime_header($type, strlen($content));
-  echo $content;
+  // xhprof_generate_mime_header($type, strlen($content));
+  return $content;
 }

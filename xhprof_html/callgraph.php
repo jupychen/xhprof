@@ -1,3 +1,14 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href='/xhprof/xhprof_html/css/xhprof.css' rel='stylesheet'  type='text/css' />
+</head>
+<body>
 <?php
 //  Copyright (c) 2009 Facebook
 //
@@ -78,14 +89,30 @@ if (!array_key_exists($type, $xhprof_legal_image_types)) {
   $type = $params['type'][1]; // default image type.
 }
 
-$xhprof_runs_impl = new XHProfRuns_Default();
+$dir = __DIR__ . '/../logs/';
+$xhprof_runs_impl = new XHProfRuns_Default($dir);
 
 if (!empty($run)) {
   // single run call graph image generation
-  xhprof_render_image($xhprof_runs_impl, $run, $type,
+  $dot = xhprof_render_image($xhprof_runs_impl, $run, $type,
                       $threshold, $func, $source, $critical);
 } else {
   // diff report call graph image generation
   xhprof_render_diff_image($xhprof_runs_impl, $run1, $run2,
                            $type, $threshold, $source);
 }
+?>
+<div id="profile_center"></div>
+<script src="/xhprof/xhprof_html/js/viz.js"></script>
+<!-- <script src="/xhprof/xhprof_html/js/viz-lite.js"></script> -->
+
+  <script>
+    var dot = <?php echo json_encode($dot); ?>;
+    // image = Viz(dot, "svg");
+    image = Viz(dot);
+    document.getElementById("profile_center").innerHTML = image;
+    // document.getElementById("profile_center").firstElementChild.style.width = '100%';
+    document.getElementById("profile_center").firstElementChild.setAttribute('height', '');
+  </script>
+  </body>
+</html>

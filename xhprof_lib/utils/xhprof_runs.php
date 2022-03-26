@@ -118,7 +118,9 @@ class XHProfRuns_Default implements iXHProfRuns {
 
     $contents = file_get_contents($file_name);
     $run_desc = "XHProf Run (Namespace=$type)";
-    return unserialize($contents);
+    $ret = unserialize($contents);
+    // $this->save_run($ret, "xhprof_testing");
+    return $ret;
   }
 
   public function save_run($xhprof_data, $type, $run_id = null) {
@@ -136,6 +138,40 @@ class XHProfRuns_Default implements iXHProfRuns {
 
     if ($file) {
       fwrite($file, $xhprof_data);
+      fclose($file);
+    } else {
+      xhprof_error("Could not open $file_name\n");
+    }
+
+    // echo "Saved run in {$file_name}.\nRun id = {$run_id}.\n";
+    return $run_id;
+  }
+
+  function get_dot_script($run_id, $type, &$run_desc) {
+    $file_name = $this->file_name($run_id, $type) . '.dot';
+
+    if (!file_exists($file_name)) {
+      xhprof_error("Could not find file $file_name");
+      $run_desc = "Invalid Run Id = $run_id";
+      return null;
+    }
+
+    $contents = file_get_contents($file_name);
+    $run_desc = "XHProf Run (Namespace=$type)";
+    $ret = $contents;
+    return $ret;
+  }
+
+  public function save_dot_script($script, $type, $run_id = null) {
+    if ($run_id === null) {
+      $run_id = $this->gen_run_id($type);
+    }
+
+    $file_name = $this->file_name($run_id, $type) . '.dot';
+    $file = fopen($file_name, 'w');
+
+    if ($file) {
+      fwrite($file, $script);
       fclose($file);
     } else {
       xhprof_error("Could not open $file_name\n");

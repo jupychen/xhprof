@@ -33,6 +33,7 @@
 
 // by default assume that xhprof_html & xhprof_lib directories
 // are at the same level.
+error_reporting(E_ALL ^ E_WARNING);
 $GLOBALS['XHPROF_LIB_ROOT'] = dirname(__FILE__) . '/../xhprof_lib';
 
 require_once $GLOBALS['XHPROF_LIB_ROOT'].'/display/xhprof.php';
@@ -80,7 +81,8 @@ $vbbar = ' class="vbbar"';
 $vrbar = ' class="vrbar"';
 $vgbar = ' class="vgbar"';
 
-$xhprof_runs_impl = new XHProfRuns_Default();
+$dir = __DIR__ . '/../logs/';
+$xhprof_runs_impl = new XHProfRuns_Default($dir);
 
 displayXHProfReport($xhprof_runs_impl, $params, $source, $run, $wts,
                     $symbol, $sort, $run1, $run2);
